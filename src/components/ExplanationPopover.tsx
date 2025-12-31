@@ -5,12 +5,14 @@ import { useEffect, useRef, useState } from "react";
 interface ExplanationPopoverProps {
   text: string;
   position: { x: number; y: number };
+  model: "fast" | "balanced" | "thinking";
   onClose: () => void;
 }
 
 export default function ExplanationPopover({
   text,
   position,
+  model,
   onClose,
 }: ExplanationPopoverProps) {
   const [explanation, setExplanation] = useState<string | null>(null);
@@ -27,7 +29,7 @@ export default function ExplanationPopover({
         const response = await fetch("/api/explain", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ text, model }),
         });
 
         const data = await response.json();
@@ -45,7 +47,7 @@ export default function ExplanationPopover({
     };
 
     fetchExplanation();
-  }, [text]);
+  }, [text, model]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -19,11 +19,20 @@ interface Selection {
   position: { x: number; y: number };
 }
 
+type ModelType = "fast" | "balanced" | "thinking";
+
+const MODEL_OPTIONS: { value: ModelType; label: string; desc: string }[] = [
+  { value: "fast", label: "Fast", desc: "GPT-4o mini" },
+  { value: "balanced", label: "Balanced", desc: "GPT-4o" },
+  { value: "thinking", label: "Thinking", desc: "o1-mini" },
+];
+
 export default function Home() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState("");
   const [selection, setSelection] = useState<Selection | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [model, setModel] = useState<ModelType>("fast");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUrlSubmit = (e: React.FormEvent) => {
@@ -217,6 +226,25 @@ export default function Home() {
           <span className="text-sm font-medium">Back</span>
         </button>
         <div className="flex-1" />
+
+        {/* Model Selector */}
+        <div className="flex items-center gap-1 bg-stone-100 rounded-lg p-1">
+          {MODEL_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setModel(opt.value)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                model === opt.value
+                  ? "bg-white text-stone-800 shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+              }`}
+              title={opt.desc}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
         <span className="text-sm text-stone-500">
           Select text to explain
         </span>
@@ -232,6 +260,7 @@ export default function Home() {
         <ExplanationPopover
           text={selection.text}
           position={selection.position}
+          model={model}
           onClose={handleClosePopover}
         />
       )}
