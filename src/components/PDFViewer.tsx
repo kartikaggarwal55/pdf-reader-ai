@@ -9,7 +9,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 interface PDFViewerProps {
   pdfUrl: string;
-  onTextSelect: (text: string, position: { x: number; y: number }) => void;
+  onTextSelect: (text: string, position: { right: number; top: number; bottom: number }) => void;
 }
 
 export default function PDFViewer({ pdfUrl, onTextSelect }: PDFViewerProps) {
@@ -43,8 +43,9 @@ export default function PDFViewer({ pdfUrl, onTextSelect }: PDFViewerProps) {
 
       if (rect) {
         onTextSelect(selectedText, {
-          x: rect.left + rect.width / 2,
-          y: rect.top,
+          right: rect.right,
+          top: rect.top,
+          bottom: rect.bottom,
         });
       }
     }

@@ -16,7 +16,7 @@ const PDFViewer = dynamic(() => import("@/components/PDFViewer"), {
 
 interface Selection {
   text: string;
-  position: { x: number; y: number };
+  position: { right: number; top: number; bottom: number };
 }
 
 type ModelType = "fast" | "balanced" | "thinking";
@@ -89,7 +89,7 @@ export default function Home() {
   }, [pdfUrl]);
 
   const handleTextSelect = useCallback(
-    (text: string, position: { x: number; y: number }) => {
+    (text: string, position: { right: number; top: number; bottom: number }) => {
       if (text.length >= 3) {
         setSelection({ text, position });
       }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface ExplanationPopoverProps {
   text: string;
-  position: { x: number; y: number };
+  position: { right: number; top: number; bottom: number };
   model: "fast" | "balanced" | "thinking";
   onClose: () => void;
 }
@@ -74,23 +74,31 @@ export default function ExplanationPopover({
     };
   }, [onClose]);
 
-  // Position popover on the right side of viewport
+  // Position popover to the right of the selected text at the same level
   const getPopoverStyle = () => {
     const popoverWidth = 320;
+    const gap = 12;
     const padding = 16;
-
-    // Fixed to right side of viewport
-    const right = padding;
-
-    // Vertically align with selection, but keep in viewport
-    let top = position.y - 60;
     const headerHeight = 56;
 
+    // Position to the right of the selection
+    let left = position.right + gap;
+
+    // If it would go off the right edge, position it to fit
+    if (left + popoverWidth > window.innerWidth - padding) {
+      left = window.innerWidth - popoverWidth - padding;
+    }
+
+    // Vertically center with the selection
+    const selectionCenter = (position.top + position.bottom) / 2;
+    let top = selectionCenter - 60;
+
+    // Keep within vertical bounds
     if (top < headerHeight + padding) {
       top = headerHeight + padding;
     }
 
-    return { right, top };
+    return { left, top };
   };
 
   const style = getPopoverStyle();
@@ -99,7 +107,7 @@ export default function ExplanationPopover({
     <div
       ref={popoverRef}
       className="fixed z-50 w-80 max-h-[calc(100vh-120px)] overflow-y-auto bg-white rounded-lg shadow-xl border border-stone-200"
-      style={{ right: style.right, top: style.top }}
+      style={{ left: style.left, top: style.top }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-stone-50 border-b border-stone-200">
