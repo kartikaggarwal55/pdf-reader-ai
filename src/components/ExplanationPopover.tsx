@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 interface ExplanationPopoverProps {
   text: string;
   position: { right: number; top: number; bottom: number };
-  model: "fast" | "balanced" | "thinking";
+  model: "gpt-4o-mini" | "gpt-4o" | "o4-mini";
   onClose: () => void;
 }
 

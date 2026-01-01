@@ -4,9 +4,9 @@ import OpenAI from "openai";
 export const runtime = "edge";
 
 const MODELS = {
-  fast: "gpt-4o-mini",
-  balanced: "gpt-4o",
-  thinking: "o1-mini",
+  "gpt-4o-mini": "gpt-4o-mini",
+  "gpt-4o": "gpt-4o",
+  "o4-mini": "o4-mini",
 } as const;
 
 type ModelType = keyof typeof MODELS;
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     const openai = new OpenAI({ apiKey });
 
-    const { text, model = "fast" } = await request.json();
+    const { text, model = "gpt-4o-mini" } = await request.json();
 
     if (!text || typeof text !== "string") {
       return NextResponse.json(
@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const selectedModel = MODELS[model as ModelType] || MODELS.fast;
-    const isThinkingModel = model === "thinking";
+    const selectedModel = MODELS[model as ModelType] || MODELS["gpt-4o-mini"];
+    const isReasoningModel = model === "o4-mini";
 
     const systemPrompt = `You are a helpful reading assistant. When given a piece of text from a research paper, book, or document, provide a brief, clear explanation that helps the reader understand it quickly.
 
@@ -56,15 +56,13 @@ Guidelines:
 
     let completion;
 
-    if (isThinkingModel) {
-      // o1 models don't support system messages or temperature
+    if (isReasoningModel) {
+      // o4-mini: use developer message, no temperature/top_p, use max_completion_tokens
       completion = await openai.chat.completions.create({
         model: selectedModel,
         messages: [
-          {
-            role: "user",
-            content: `${systemPrompt}\n\nExplain this in simple terms:\n\n"${text}"`,
-          },
+          { role: "developer", content: systemPrompt },
+          { role: "user", content: `Explain this in simple terms:\n\n"${text}"` },
         ],
         max_completion_tokens: 300,
       });

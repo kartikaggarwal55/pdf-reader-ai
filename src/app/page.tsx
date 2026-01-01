@@ -19,12 +19,12 @@ interface Selection {
   position: { right: number; top: number; bottom: number };
 }
 
-type ModelType = "fast" | "balanced" | "thinking";
+type ModelType = "gpt-4o-mini" | "gpt-4o" | "o4-mini";
 
-const MODEL_OPTIONS: { value: ModelType; label: string; desc: string }[] = [
-  { value: "fast", label: "Fast", desc: "GPT-4o mini" },
-  { value: "balanced", label: "Balanced", desc: "GPT-4o" },
-  { value: "thinking", label: "Thinking", desc: "o1-mini" },
+const MODEL_OPTIONS: { value: ModelType; label: string }[] = [
+  { value: "gpt-4o-mini", label: "gpt-4o-mini" },
+  { value: "gpt-4o", label: "gpt-4o" },
+  { value: "o4-mini", label: "o4-mini" },
 ];
 
 export default function Home() {
@@ -32,7 +32,7 @@ export default function Home() {
   const [urlInput, setUrlInput] = useState("");
   const [selection, setSelection] = useState<Selection | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [model, setModel] = useState<ModelType>("fast");
+  const [model, setModel] = useState<ModelType>("gpt-4o-mini");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUrlSubmit = (e: React.FormEvent) => {
@@ -238,7 +238,6 @@ export default function Home() {
                   ? "bg-white text-stone-800 shadow-sm"
                   : "text-stone-500 hover:text-stone-700"
               }`}
-              title={opt.desc}
             >
               {opt.label}
             </button>
