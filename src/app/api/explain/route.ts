@@ -6,7 +6,6 @@ export const runtime = "edge";
 const MODELS = {
   "gpt-4o-mini": "gpt-4o-mini",
   "gpt-4o": "gpt-4o",
-  "o4-mini": "o4-mini",
 } as const;
 
 type ModelType = keyof typeof MODELS;
@@ -41,7 +40,6 @@ export async function POST(request: NextRequest) {
     }
 
     const selectedModel = MODELS[model as ModelType] || MODELS["gpt-4o-mini"];
-    const isReasoningModel = model === "o4-mini";
 
     const systemPrompt = `You are a helpful reading assistant. When given a piece of text from a research paper, book, or document, provide a brief, clear explanation that helps the reader understand it quickly.
 
@@ -54,29 +52,15 @@ Guidelines:
 - Don't add unnecessary context or tangents
 - Focus on what would help someone continue reading with better understanding`;
 
-    let completion;
-
-    if (isReasoningModel) {
-      // o4-mini: use developer message, no temperature/top_p, use max_completion_tokens
-      completion = await openai.chat.completions.create({
-        model: selectedModel,
-        messages: [
-          { role: "developer", content: systemPrompt },
-          { role: "user", content: `Explain this in simple terms:\n\n"${text}"` },
-        ],
-        max_completion_tokens: 300,
-      });
-    } else {
-      completion = await openai.chat.completions.create({
-        model: selectedModel,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Explain this in simple terms:\n\n"${text}"` },
-        ],
-        max_tokens: 200,
-        temperature: 0.3,
-      });
-    }
+    const completion = await openai.chat.completions.create({
+      model: selectedModel,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Explain this in simple terms:\n\n"${text}"` },
+      ],
+      max_tokens: 200,
+      temperature: 0.3,
+    });
 
     const explanation = completion.choices[0]?.message?.content || "Unable to generate explanation.";
 

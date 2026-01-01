@@ -19,12 +19,11 @@ interface Selection {
   position: { right: number; top: number; bottom: number };
 }
 
-type ModelType = "gpt-4o-mini" | "gpt-4o" | "o4-mini";
+type ModelType = "gpt-4o-mini" | "gpt-4o";
 
 const MODEL_OPTIONS: { value: ModelType; label: string }[] = [
   { value: "gpt-4o-mini", label: "gpt-4o-mini" },
   { value: "gpt-4o", label: "gpt-4o" },
-  { value: "o4-mini", label: "o4-mini" },
 ];
 
 export default function Home() {
