@@ -58,17 +58,39 @@ export default function PDFViewer({ pdfUrl, onTextSelect }: PDFViewerProps) {
     }
   }, [handleMouseUp]);
 
-  const zoomIn = () => setScale((s) => Math.min(s + 0.2, 3));
-  const zoomOut = () => setScale((s) => Math.max(s - 0.2, 0.5));
+  const zoomIn = useCallback(() => setScale((s) => Math.min(s + 0.2, 3)), []);
+  const zoomOut = useCallback(() => setScale((s) => Math.max(s - 0.2, 0.5)), []);
+
+  // Keyboard shortcuts for zoom
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey) {
+        if (e.key === "=" || e.key === "+") {
+          e.preventDefault();
+          zoomIn();
+        } else if (e.key === "-") {
+          e.preventDefault();
+          zoomOut();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [zoomIn, zoomOut]);
 
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-stone-100 border-b border-stone-200">
+        {numPages > 0 && (
+          <span className="text-sm text-stone-500">{numPages} pages</span>
+        )}
         <div className="flex items-center gap-2">
           <button
             onClick={zoomOut}
             className="px-3 py-1.5 text-sm bg-white border border-stone-300 rounded hover:bg-stone-50 transition-colors"
+            title="Zoom out (⌘-)"
           >
             -
           </button>
@@ -78,13 +100,11 @@ export default function PDFViewer({ pdfUrl, onTextSelect }: PDFViewerProps) {
           <button
             onClick={zoomIn}
             className="px-3 py-1.5 text-sm bg-white border border-stone-300 rounded hover:bg-stone-50 transition-colors"
+            title="Zoom in (⌘+)"
           >
             +
           </button>
         </div>
-        {numPages > 0 && (
-          <span className="text-sm text-stone-500">{numPages} pages</span>
-        )}
       </div>
 
       {/* PDF Container */}

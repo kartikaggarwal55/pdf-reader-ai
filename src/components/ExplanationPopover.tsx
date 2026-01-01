@@ -74,27 +74,23 @@ export default function ExplanationPopover({
     };
   }, [onClose]);
 
-  // Calculate position to keep popover in viewport
+  // Position popover on the right side of viewport
   const getPopoverStyle = () => {
     const popoverWidth = 320;
-    const popoverHeight = 150;
     const padding = 16;
 
-    let left = position.x - popoverWidth / 2;
-    let top = position.y - popoverHeight - 12;
+    // Fixed to right side of viewport
+    const right = padding;
 
-    // Keep within horizontal bounds
-    if (left < padding) left = padding;
-    if (left + popoverWidth > window.innerWidth - padding) {
-      left = window.innerWidth - popoverWidth - padding;
+    // Vertically align with selection, but keep in viewport
+    let top = position.y - 60;
+    const headerHeight = 56;
+
+    if (top < headerHeight + padding) {
+      top = headerHeight + padding;
     }
 
-    // If would go above viewport, show below selection
-    if (top < padding) {
-      top = position.y + 24;
-    }
-
-    return { left, top };
+    return { right, top };
   };
 
   const style = getPopoverStyle();
@@ -102,8 +98,8 @@ export default function ExplanationPopover({
   return (
     <div
       ref={popoverRef}
-      className="fixed z-50 w-80 bg-white rounded-lg shadow-xl border border-stone-200 overflow-hidden"
-      style={{ left: style.left, top: style.top }}
+      className="fixed z-50 w-80 max-h-[calc(100vh-120px)] overflow-y-auto bg-white rounded-lg shadow-xl border border-stone-200"
+      style={{ right: style.right, top: style.top }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 bg-stone-50 border-b border-stone-200">
